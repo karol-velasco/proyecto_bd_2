@@ -173,7 +173,7 @@ if (formContacto) {
   });
 }
 
-// 6. Consultar y mostrar los mensajes de contacto en pantalla (READ - GET /contacto)
+
 async function cargarMensajes() {
   if (!listaMensajes) return;
 

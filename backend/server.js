@@ -94,7 +94,6 @@ app.get("/contacto", (req, res) => {
 app.post("/contacto", (req, res) => {
   const { nombre, email, asunto, mensaje } = req.body;
 
-  // Nota: en tu base de datos la columna se llama 'correo', pero en el frontend envías 'email'
   const sql = "INSERT INTO mensajes (nombre, correo, asunto, mensaje) VALUES (?, ?, ?, ?)";
   const valores = [nombre, email, asunto, mensaje];
 
