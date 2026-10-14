@@ -79,6 +79,51 @@ app.delete("/productos/:id", (req, res) => {
   });
 });
 
+app.get("/contacto", (req, res) => {
+  const sql = "SELECT * FROM mensajes ORDER BY fecha_registro DESC";
+
+  conexion.query(sql, (error, resultados) => {
+    if (error) {
+      console.error("Error al consultar los mensajes:", error);
+      return res.status(500).json({ mensaje: "Error al consultar los mensajes" });
+    }
+    res.json(resultados);
+  });
+});
+
+app.post("/contacto", (req, res) => {
+  const { nombre, email, asunto, mensaje } = req.body;
+
+  // Nota: en tu base de datos la columna se llama 'correo', pero en el frontend envías 'email'
+  const sql = "INSERT INTO mensajes (nombre, correo, asunto, mensaje) VALUES (?, ?, ?, ?)";
+  const valores = [nombre, email, asunto, mensaje];
+
+  conexion.query(sql, valores, (error, resultado) => {
+    if (error) {
+      console.error("Error al insertar el mensaje:", error);
+      return res.status(500).json({ mensaje: "Error al guardar el mensaje" });
+    }
+
+    res.status(201).json({
+      mensaje: "Mensaje guardado correctamente",
+      id: resultado.insertId,
+    });
+  });
+});
+
+app.delete("/contacto/:id", (req, res) => {
+  const id = req.params.id;
+  const sql = "DELETE FROM mensajes WHERE id = ?";
+
+  conexion.query(sql, [id], (error, resultado) => {
+    if (error) {
+      console.error("Error al eliminar el mensaje:", error);
+      return res.status(500).json({ mensaje: "Error al eliminar el mensaje" });
+    }
+    res.json({ mensaje: "Mensaje eliminado correctamente" });
+  });
+});
+
 // Iniciar servidor en el puerto 3000
 app.listen(3000, () => {
   console.log(" Servidor ejecutándose en http://localhost:3000");

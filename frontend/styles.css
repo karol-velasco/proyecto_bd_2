@@ -49,7 +49,7 @@ body {
 }
 
 .logo strong {
-    color: #2563eb;
+    color: #a66ace;
 }
 
 .nav-links {
@@ -59,13 +59,13 @@ body {
 
 .nav-links a {
     text-decoration: none;
-    color: #64748b;
+    color: #7f648b;
     font-weight: 500;
     transition: color 0.2s;
 }
 
 .nav-links a:hover {
-    color: #2563eb;
+    color: #a66ace;
 }
 
 /* --- Contenido Principal --- */
@@ -85,7 +85,7 @@ main {
 }
 
 .encabezado-principal p {
-    color: #64748b;
+    color: #7f648b;
     font-size: 1rem;
 }
 
@@ -108,7 +108,7 @@ main {
 
 .tarjeta h2 {
     font-size: 1.25rem;
-    color: #1e293b;
+    color: #5e1dd8;
     margin-bottom: 18px;
     border-bottom: 2px solid #e2e8f0;
     padding-bottom: 8px;
@@ -173,12 +173,12 @@ textarea:focus {
 
 .btn-guardar {
     flex: 1;
-    background-color: #2563eb;
+    background-color: #5e1dd8;
     color: #ffffff;
 }
 
 .btn-guardar:hover {
-    background-color: #1d4ed8;
+    background-color: #5e1dd8;
 }
 
 .btn-cancelar {
@@ -231,7 +231,7 @@ textarea:focus {
 
 .producto-precio {
     font-weight: 700;
-    color: #2563eb;
+    color: #7b25eb;
     font-size: 1.1rem !important;
 }
 
@@ -288,8 +288,8 @@ textarea:focus {
 
 /* --- Pie de Página (Footer) --- */
 .footer {
-    background-color: #0f172a;
-    color: #94a3b8;
+    background-color: #8266b8;
+    color: #000000;
     padding: 20px 0;
     margin-top: auto;
     text-align: center;
