@@ -1,4 +1,11 @@
-const API_URL = "https://proyecto-bd-2-uprx.onrender.com";
+const esLocal =
+  window.location.hostname === "localhost" ||
+  window.location.hostname === "127.0.0.1" ||
+  window.location.protocol === "file:";
+
+const API_URL = esLocal
+  ? "http://localhost:3000"
+  : "https://proyecto-bd-2-uprx.onrender.com";
 
 // Elementos del DOM
 const listaProductos = document.getElementById("listaProductos");
