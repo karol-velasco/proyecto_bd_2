@@ -6,7 +6,12 @@ const conexion = require("./db"); // Importamos la conexión creada en db.js
 const app = express();
 
 // Middlewares globales
-app.use(cors()); // Permitir peticiones desde el frontend
+app.use(cors({
+  origin: 'https://proyectobd2-frontend-pi.vercel.app', // Tu dominio exacto de Vercel
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Incluye OPTIONS explícitamente para el preflight
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+})); // Permitir peticiones desde el frontend
 app.use(express.json()); // Habilitar la lectura de datos en formato JSON en el cuerpo (req.body)
 
 // Ruta de prueba
