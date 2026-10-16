@@ -23,7 +23,7 @@ async function cargarProductos() {
 
     listaProductos.innerHTML = "";
 
-    if (productos.length === 0) {
+    if (!Array.isArray(productos) || productos.length === 0) {
       listaProductos.innerHTML = "<p style='color: #64748b;'>No hay productos registrados.</p>";
       return;
     }
@@ -153,7 +153,7 @@ if (formContacto) {
       const respuesta = await fetch(`${API_URL}/contacto`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ nombre, email, asunto, mensaje }),
+        body: JSON.stringify({ nombre, email, correo: email, asunto, mensaje }),
       });
 
       if (respuesta.ok) {
@@ -201,7 +201,7 @@ async function cargarMensajes() {
       elemento.innerHTML = `
         <div>
           <h3>${msg.nombre}</h3>
-          <p><strong>Correo:</strong> ${msg.correo}</p>
+          <p><strong>Correo:</strong> ${msg.correo || msg.email}</p>
           <p><strong>Asunto:</strong> ${msg.asunto}</p>
           <p><strong>Mensaje:</strong> ${msg.mensaje}</p>
           <p style="font-size: 0.8rem; color: #94a3b8; margin-top: 6px;">📅 ${fecha}</p>

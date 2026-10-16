@@ -15,26 +15,32 @@ const configuracion = {
   user,
   password,
   database,
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0,
+  enableKeepAlive: true,
+  keepAliveInitialDelay: 0,
 };
 
 // Si el host es remoto (TiDB Cloud, Aiven, etc.), habilitar el SSL automáticamente
 if (host !== "localhost" && host !== "127.0.0.1") {
   configuracion.ssl = {
     minVersion: "TLSv1.2",
-    rejectUnauthorized: true, // Corregido: 'rejectUnauthorized' (con 'h')
+    rejectUnauthorized: true,
   };
 }
 
-// Crear la conexión con MySQL o TiDB Cloud
-const conexion = mysql.createConnection(configuracion);
+// Crear el pool de conexiones con MySQL o TiDB Cloud
+const conexion = mysql.createPool(configuracion);
 
 // Comprobamos si la conexión fue exitosa
-conexion.connect((error) => {
+conexion.getConnection((error, conn) => {
   if (error) {
     console.error("Error al conectar con la Base de datos:", error.message);
     return;
   }
   console.log(`Conexión exitosa con la base de datos (${host}:${port})`);
+  conn.release();
 });
 
 // Exportar la conexión para reutilizarla en las rutas del servidor

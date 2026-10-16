@@ -8,7 +8,11 @@ const app = express();
 const whitelist = [
   'https://proyectobd2-frontend-pi.vercel.app',
   'http://localhost:5173',
-  'http://localhost:3000'
+  'http://localhost:3000',
+  'http://127.0.0.1:3000',
+  'http://localhost:5500',
+  'http://127.0.0.1:5500',
+  'null'
 ];
 
 app.use(cors({
@@ -109,14 +113,15 @@ app.delete("/productos/:id", (req, res) => {
 });
 
 app.post("/contacto", (req, res) => {
-  const { nombre, email, asunto, mensaje } = req.body;
+  const { nombre, email, correo, asunto, mensaje } = req.body;
+  const correoFinal = correo || email;
 
-  if (!nombre || !email || !asunto || !mensaje) {
+  if (!nombre || !correoFinal || !asunto || !mensaje) {
     return res.status(400).json({ mensaje: "Todos los campos son obligatorios" });
   }
 
-  const sql = "INSERT INTO mensajes_contacto (nombre, email, asunto, mensaje) VALUES (?, ?, ?, ?)";
-  const valores = [nombre, email, asunto, mensaje];
+  const sql = "INSERT INTO mensajes (nombre, correo, asunto, mensaje) VALUES (?, ?, ?, ?)";
+  const valores = [nombre, correoFinal, asunto, mensaje];
 
   conexion.query(sql, valores, (error, resultado) => {
     if (error) {
@@ -132,7 +137,7 @@ app.post("/contacto", (req, res) => {
 });
 
 app.get("/contacto", (req, res) => {
-  const sql = "SELECT * FROM mensajes_contacto ORDER BY fecha_registro DESC";
+  const sql = "SELECT * FROM mensajes ORDER BY fecha_registro DESC";
 
   conexion.query(sql, (error, resultados) => {
     if (error) {
@@ -145,7 +150,7 @@ app.get("/contacto", (req, res) => {
 
 app.delete("/contacto/:id", (req, res) => {
   const id = req.params.id;
-  const sql = "DELETE FROM mensajes_contacto WHERE id = ?";
+  const sql = "DELETE FROM mensajes WHERE id = ?";
 
   conexion.query(sql, [id], (error, resultado) => {
     if (error) {
