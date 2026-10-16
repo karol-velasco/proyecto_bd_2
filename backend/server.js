@@ -1,49 +1,60 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
-const conexion = require("./db"); // Importamos la conexión creada en db.js
+const conexion = require("./db");
 
 const app = express();
 
-// Middlewares globales
+const whitelist = [
+  'https://proyectobd2-frontend-pi.vercel.app',
+  'http://localhost:5173',
+  'http://localhost:3000'
+];
+
 app.use(cors({
-  origin: 'https://proyectobd2-frontend-pi.vercel.app', // Tu dominio exacto de Vercel
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Incluye OPTIONS explícitamente para el preflight
+  origin: function (origin, callback) {
+    if (!origin || whitelist.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Acceso denegado por CORS'));
+    }
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
-})); // Permitir peticiones desde el frontend
-app.use(express.json()); // Habilitar la lectura de datos en formato JSON en el cuerpo (req.body)
+}));
 
-// Ruta de prueba
+app.use(express.json());
+
 app.get("/", (req, res) => {
   res.send("Servidor funcionando correctamente");
 });
 
-// 1. Obtener todos los productos (READ)
 app.get("/productos", (req, res) => {
   const sql = "SELECT * FROM productos";
 
   conexion.query(sql, (error, resultados) => {
     if (error) {
-      console.error("Error al consultar:", error);
+      console.error("Error al consultar productos:", error);
       return res.status(500).json({ mensaje: "Error al consultar los productos" });
     }
-    // Retornamos el array de productos como JSON al cliente
     res.json(resultados);
   });
 });
 
-// 2. Crear un nuevo producto (CREATE)
 app.post("/productos", (req, res) => {
   const { nombre, precio, stock } = req.body;
 
-  // Consulta parametrizada con '?' para prevenir inyección SQL
+  if (!nombre || precio === undefined || stock === undefined) {
+    return res.status(400).json({ mensaje: "Nombre, precio y stock son obligatorios" });
+  }
+
   const sql = "INSERT INTO productos (nombre, precio, stock) VALUES (?, ?, ?)";
   const valores = [nombre, precio, stock];
 
   conexion.query(sql, valores, (error, resultado) => {
     if (error) {
-      console.error("Error al insertar:", error);
+      console.error("Error al insertar producto:", error);
       return res.status(500).json({ mensaje: "Error al crear el producto" });
     }
 
@@ -54,46 +65,52 @@ app.post("/productos", (req, res) => {
   });
 });
 
-// 3. Actualizar un producto existente (UPDATE)
 app.put("/productos/:id", (req, res) => {
   const id = req.params.id;
   const { nombre, precio, stock } = req.body;
+
+  if (!nombre || precio === undefined || stock === undefined) {
+    return res.status(400).json({ mensaje: "Nombre, precio y stock son obligatorios" });
+  }
 
   const sql = "UPDATE productos SET nombre = ?, precio = ?, stock = ? WHERE id = ?";
   const valores = [nombre, precio, stock, id];
 
   conexion.query(sql, valores, (error, resultado) => {
     if (error) {
-      console.error("Error al actualizar:", error);
+      console.error("Error al actualizar producto:", error);
       return res.status(500).json({ mensaje: "Error al actualizar el producto" });
     }
+
+    if (resultado.affectedRows === 0) {
+      return res.status(404).json({ mensaje: "Producto no encontrado" });
+    }
+
     res.json({ mensaje: "Producto actualizado correctamente" });
   });
 });
 
-// 4. Eliminar un producto (DELETE)
 app.delete("/productos/:id", (req, res) => {
   const id = req.params.id;
   const sql = "DELETE FROM productos WHERE id = ?";
 
   conexion.query(sql, [id], (error, resultado) => {
     if (error) {
-      console.error("Error al eliminar:", error);
+      console.error("Error al eliminar producto:", error);
       return res.status(500).json({ mensaje: "Error al eliminar el producto" });
     }
+
+    if (resultado.affectedRows === 0) {
+      return res.status(404).json({ mensaje: "Producto no encontrado" });
+    }
+
     res.json({ mensaje: "Producto eliminado correctamente" });
   });
 });
 
-// ==========================================
-// RUTAS DE CONTACTO
-// ==========================================
-
-// 5. Registrar un nuevo mensaje de contacto (POST)
 app.post("/contacto", (req, res) => {
   const { nombre, email, asunto, mensaje } = req.body;
 
-  // Validación básica de campos requeridos
   if (!nombre || !email || !asunto || !mensaje) {
     return res.status(400).json({ mensaje: "Todos los campos son obligatorios" });
   }
@@ -114,7 +131,6 @@ app.post("/contacto", (req, res) => {
   });
 });
 
-// 6. Consultar todos los mensajes de contacto (GET)
 app.get("/contacto", (req, res) => {
   const sql = "SELECT * FROM mensajes_contacto ORDER BY fecha_registro DESC";
 
@@ -127,7 +143,6 @@ app.get("/contacto", (req, res) => {
   });
 });
 
-// 7. Eliminar un mensaje de contacto (DELETE)
 app.delete("/contacto/:id", (req, res) => {
   const id = req.params.id;
   const sql = "DELETE FROM mensajes_contacto WHERE id = ?";
@@ -137,12 +152,16 @@ app.delete("/contacto/:id", (req, res) => {
       console.error("Error al eliminar mensaje de contacto:", error);
       return res.status(500).json({ mensaje: "Error al eliminar el mensaje de contacto" });
     }
+
+    if (resultado.affectedRows === 0) {
+      return res.status(404).json({ mensaje: "Mensaje de contacto no encontrado" });
+    }
+
     res.json({ mensaje: "Mensaje eliminado correctamente" });
   });
 });
 
-// Iniciar servidor en el puerto 3000
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Servidor ejecutándose en http://localhost:${PORT}`);
+  console.log(`Servidor ejecutándose en el puerto ${PORT}`);
 });

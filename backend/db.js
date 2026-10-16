@@ -2,7 +2,6 @@ require("dotenv").config();
 const mysql = require("mysql2");
 
 // Configuración de la conexión de la BD
-
 const host = process.env.DB_HOST || "localhost";
 const port = Number(process.env.DB_PORT) || 3306;
 const user = process.env.DB_USER || "root";
@@ -18,11 +17,11 @@ const configuracion = {
   database,
 };
 
-// Si el host es remoto (TiDB Cloud), habilitar  el SSL automaticamente
-if (host !== "localhostt" && host !== "127.0.0.1") {
+// Si el host es remoto (TiDB Cloud, Aiven, etc.), habilitar el SSL automáticamente
+if (host !== "localhost" && host !== "127.0.0.1") {
   configuracion.ssl = {
     minVersion: "TLSv1.2",
-    rejectUnauhorized: true,
+    rejectUnauthorized: true, // Corregido: 'rejectUnauthorized' (con 'h')
   };
 }
 
@@ -32,7 +31,7 @@ const conexion = mysql.createConnection(configuracion);
 // Comprobamos si la conexión fue exitosa
 conexion.connect((error) => {
   if (error) {
-    console.error("Error al conectar con la Base de datos", error.message);
+    console.error("Error al conectar con la Base de datos:", error.message);
     return;
   }
   console.log(`Conexión exitosa con la base de datos (${host}:${port})`);
