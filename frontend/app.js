@@ -2,6 +2,7 @@ const API_URL = "https://proyecto-bd-2-uprx.onrender.com";
 
 // Elementos del DOM
 const listaProductos = document.getElementById("listaProductos");
+const listaMensajes = document.getElementById("listaMensajes");
 const formulario = document.getElementById("formularioProducto");
 const productoId = document.getElementById("productoId");
 const nombreInput = document.getElementById("nombre");
